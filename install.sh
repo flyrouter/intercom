@@ -1,6 +1,6 @@
 #!/bin/sh
 #===============================================================================
-# OpenIPC Doorphone Installer v3.1
+# OpenIPC Doorphone Installer v3.2
 # https://github.com/OpenIPC/intercom
 #===============================================================================
 
@@ -13,9 +13,8 @@ NC='\033[0m'
 
 clear
 echo "${BLUE}==========================================${NC}"
-echo "${BLUE}  OpenIPC Doorphone Installer v3.1${NC}"
-echo "${BLUE}  Full Installation Mode${NC}"
-echo "${BLUE}  with all files included${NC}"
+echo "${BLUE}  OpenIPC Doorphone Installer v3.2${NC}"
+echo "${BLUE}  with fixed GitHub commit references${NC}"
 echo "${BLUE}==========================================${NC}"
 echo ""
 
@@ -62,7 +61,8 @@ download_file() {
     return 1
 }
 
-BASE_URL="https://raw.githubusercontent.com/OpenIPC/intercom/main"
+# Базовый URL с фиксированным хешем коммита
+BASE_URL="https://raw.githubusercontent.com/OpenIPC/intercom/50bf937"
 
 #-----------------------------------------------------------------------------
 # Step 1: ОСТАНОВКА ВСЕХ СЕРВИСОВ
@@ -199,9 +199,9 @@ echo "${GREEN}  ✓ UART and services configured${NC}"
 echo ""
 
 #-----------------------------------------------------------------------------
-# Step 7: Скачивание файлов с GitHub (ВСЕ ЗАНОВО)
+# Step 7: Скачивание файлов с GitHub (с фиксированным хешем коммита)
 #-----------------------------------------------------------------------------
-echo "${BLUE}Step 7: Downloading fresh files from GitHub...${NC}"
+echo "${BLUE}Step 7: Downloading fresh files from GitHub (fixed commit)...${NC}"
 
 # Счетчики
 TOTAL=0
@@ -229,7 +229,7 @@ else
     echo "    ${GREEN}  ✓ MQTT entry added to menu${NC}"
 fi
 
-# CGI скрипты (ПОЛНЫЙ СПИСОСОК)
+# CGI скрипты (ПОЛНЫЙ СПИСОК)
 echo "  - Downloading CGI scripts..."
 P_FILES="
 door_keys.cgi
