@@ -1,6 +1,6 @@
 #!/bin/sh
 #===============================================================================
-# OpenIPC Doorphone Installer v3.0
+# OpenIPC Doorphone Installer v3.1
 # https://github.com/OpenIPC/intercom
 #===============================================================================
 
@@ -13,8 +13,9 @@ NC='\033[0m'
 
 clear
 echo "${BLUE}==========================================${NC}"
-echo "${BLUE}  OpenIPC Doorphone Installer v3.0${NC}"
+echo "${BLUE}  OpenIPC Doorphone Installer v3.1${NC}"
 echo "${BLUE}  Full Installation Mode${NC}"
+echo "${BLUE}  with all files included${NC}"
 echo "${BLUE}==========================================${NC}"
 echo ""
 
@@ -133,6 +134,11 @@ if [ -f /etc/webui/telegram.conf ]; then
     echo "  ✓ Telegram config backed up to /tmp/telegram.conf.bak"
 fi
 
+if [ -f /etc/doorphone_sounds.conf ]; then
+    cp /etc/doorphone_sounds.conf /tmp/doorphone_sounds.conf.bak
+    echo "  ✓ Sound config backed up to /tmp/doorphone_sounds.conf.bak"
+fi
+
 # Удаляем старые конфиги
 rm -f /etc/door_keys.conf 2>/dev/null
 rm -f /etc/mqtt.conf 2>/dev/null
@@ -140,9 +146,6 @@ rm -f /etc/doorphone_sounds.conf 2>/dev/null
 rm -f /etc/webui/telegram.conf 2>/dev/null
 rm -f /etc/baresip/accounts 2>/dev/null
 rm -f /etc/baresip/call_number 2>/dev/null
-
-# Удаляем старые звуки (опционально - можно оставить)
-# rm -f /usr/share/sounds/doorphone/*.pcm 2>/dev/null
 
 echo "${GREEN}  ✓ Old files cleaned${NC}"
 echo ""
@@ -214,7 +217,6 @@ if download_file "$BASE_URL/www/cgi-bin/header.cgi" "/var/www/cgi-bin/header.cgi
     echo "    ${GREEN}  ✓ header.cgi downloaded from repository${NC}"
 else
     echo "    ${YELLOW}  ⚠️ header.cgi not found in repository, creating custom menu...${NC}"
-    # Здесь можно вставить создание кастомного header.cgi
     SUCCESS=$((SUCCESS + 1))
 fi
 
@@ -227,7 +229,7 @@ else
     echo "    ${GREEN}  ✓ MQTT entry added to menu${NC}"
 fi
 
-# CGI скрипты
+# CGI скрипты (ПОЛНЫЙ СПИСОСОК)
 echo "  - Downloading CGI scripts..."
 P_FILES="
 door_keys.cgi
@@ -246,6 +248,7 @@ sip_api.cgi
 sip_save.cgi
 play_sound.cgi
 upload_final.cgi
+common.cgi
 "
 
 for file in $P_FILES; do
@@ -305,8 +308,8 @@ for file in $BIN_FILES; do
     fi
 done
 
-# Конфиги (НОВЫЕ)
-echo "  - Creating fresh config files..."
+# Конфиги (ПОЛНЫЙ СПИСОК)
+echo "  - Downloading config files..."
 CONF_FILES="
 door_keys.conf
 mqtt.conf
@@ -350,9 +353,12 @@ for file in $CONF_FILES; do
                 echo '# Sound Configuration' > /etc/doorphone_sounds.conf
                 echo 'SOUND_KEY_ACCEPT="beep"' >> /etc/doorphone_sounds.conf
                 echo 'SOUND_KEY_DENY="denied"' >> /etc/doorphone_sounds.conf
+                echo 'SOUND_QR_ACCEPT="beep"' >> /etc/doorphone_sounds.conf
+                echo 'SOUND_QR_DENY="denied"' >> /etc/doorphone_sounds.conf
                 echo 'SOUND_DOOR_OPEN="door_open"' >> /etc/doorphone_sounds.conf
                 echo 'SOUND_DOOR_CLOSE="door_close"' >> /etc/doorphone_sounds.conf
                 echo 'SOUND_BUTTON="beep"' >> /etc/doorphone_sounds.conf
+                echo 'SOUND_RING="ring"' >> /etc/doorphone_sounds.conf
                 SUCCESS=$((SUCCESS + 1))
                 ;;
             baresip/call_number)
@@ -368,7 +374,7 @@ done
 
 # Звуки (опционально)
 echo "  - Downloading sound files..."
-SOUND_FILES="ring.pcm door_open.pcm door_close.pcm denied.pcm beep.pcm"
+SOUND_FILES="ring.pcm door_open.pcm door_close.pcm denied.pcm beep.pcm success.pcm error.pcm"
 for file in $SOUND_FILES; do
     TOTAL=$((TOTAL + 1))
     if download_file "$BASE_URL/sounds/$file" "/usr/share/sounds/doorphone/$file" "$file" 2>/dev/null; then
